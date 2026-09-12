@@ -60,6 +60,9 @@ export default class Player extends Phaser.GameObjects.Container {
     // Apply archetype gravity scaling
     this.body.setGravityY(GAME_SETTINGS.PHYSICS.GRAVITY_Y * this.archetype.gravityMultiplier);
 
+    // Ground state tracking for landing squash and dust
+    this.wasOnFloor = true;
+
     // Initial spawn invincibility bubble
     this.grantInvincibility(GAME_SETTINGS.COMBAT.SPAWN_INVINCIBILITY_SEC);
   }
@@ -104,6 +107,10 @@ export default class Player extends Phaser.GameObjects.Container {
       this.facing = dir;
       this.sprite.setFlipX(dir === 'left');
     }
+  }
+
+  drawBody(animName) {
+    this.playAnim(animName);
   }
 
   playAnim(animName, lockDurationMs = 0) {
@@ -177,6 +184,21 @@ export default class Player extends Phaser.GameObjects.Container {
       duration: 60,
       repeat: 1
     });
+
+    // Hit sparks & camera micro-kick for tactile realism
+    if (this.scene?.textures.exists('particle_spark')) {
+      const spark = this.scene.add.particles(this.x, this.y - 10, 'particle_spark', {
+        speed: { min: 90, max: 240 },
+        scale: { start: 1.1, end: 0 },
+        lifespan: 180,
+        quantity: 7
+      });
+      this.scene.time.delayedCall(200, () => spark.destroy());
+    }
+
+    if (this.scene?.cameras?.main) {
+      this.scene.cameras.main.shake(70, 0.007);
+    }
 
     // Knockback
     const knockDir = this.x >= attackerX ? 1 : -1;
@@ -297,11 +319,24 @@ export default class Player extends Phaser.GameObjects.Container {
       }
     }
 
-    // Ground reset for double jumps
+    // Ground reset for double jumps and landing impact
     const onFloor = this.body.touching.down || this.body.blocked.down;
     if (onFloor) {
+      if (!this.wasOnFloor && Math.abs(this.body.velocity.y) < 80) {
+        // Landing squash and dust
+        this.spawnDust(5);
+        this.scene.tweens.add({
+          targets: this.sprite,
+          scaleX: 1.14,
+          scaleY: 0.88,
+          duration: 65,
+          yoyo: true,
+          ease: 'Quad.easeOut'
+        });
+      }
       this.jumpCount = 0;
     }
+    this.wasOnFloor = onFloor;
 
     // Update animations based on movement state
     if (this.animLockTimer <= 0) {
@@ -439,5 +474,18 @@ export default class Player extends Phaser.GameObjects.Container {
       quantity: count
     });
     this.scene.time.delayedCall(460, () => emitter.destroy());
+  }
+
+  spawnDust(count = 4) {
+    if (!this.scene?.textures.exists('particle_dust')) return;
+    const dust = this.scene.add.particles(this.x, this.y + 26, 'particle_dust', {
+      speed: { min: 30, max: 90 },
+      angle: { min: 180, max: 360 },
+      scale: { start: 0.8, end: 0 },
+      alpha: { start: 0.65, end: 0 },
+      lifespan: 220,
+      quantity: count
+    });
+    this.scene.time.delayedCall(240, () => dust.destroy());
   }
 }

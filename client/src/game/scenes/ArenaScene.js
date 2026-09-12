@@ -11,10 +11,11 @@ export default class ArenaScene extends Phaser.Scene {
   }
 
   init(data) {
-    this.socket = data?.socket || null;
-    this.username = data?.username || 'Brawler';
-    this.userColor = data?.userColor || '#38bdf8';
-    this.onHudUpdate = data?.onHudUpdate || (() => {});
+    const registryData = this.registry?.get('arenaData') || {};
+    this.socket = data?.socket || registryData.socket || null;
+    this.username = data?.username || registryData.username || 'Brawler';
+    this.userColor = data?.userColor || registryData.userColor || '#38bdf8';
+    this.onHudUpdate = data?.onHudUpdate || registryData.onHudUpdate || (() => {});
 
     // Active Map Rotation (Map 1 -> Map 2 -> Map 3 -> Map 1)
     this.activeMapIndex = 0;
@@ -92,14 +93,23 @@ export default class ArenaScene extends Phaser.Scene {
     if (this.hazardsGroup) this.hazardsGroup.clear(true, true);
 
     // Arena background (1280x720 16:9 fixed)
-    this.bgImage = this.add.image(640, 360, config.bgKey);
-    this.bgImage.setDisplaySize(1280, 720);
-    this.bgImage.setDepth(-10);
+    if (this.textures.exists(config.bgKey)) {
+      this.bgImage = this.add.image(640, 360, config.bgKey);
+      this.bgImage.setDisplaySize(1280, 720);
+      this.bgImage.setDepth(-10);
+    } else {
+      // Fallback stylized dark arena gradient
+      const bg = this.add.graphics().setDepth(-10);
+      bg.fillGradientStyle(0x16162a, 0x16162a, 0x0a0a14, 0x0a0a14, 1);
+      bg.fillRect(0, 0, 1280, 720);
+      this.bgImage = bg;
+    }
 
     // Solid Cliffs & Enclosing Walls
     this.solidsGroup = this.physics.add.staticGroup();
     config.solids.forEach((s) => {
-      const rect = this.add.rectangle(s.x, s.y, s.width, s.height, 0x000000, 0);
+      const rect = this.add.rectangle(s.x, s.y, s.width, s.height, 0x1e293b, 0.45);
+      rect.setStrokeStyle(1.5, 0x475569, 0.7);
       this.physics.add.existing(rect, true);
       this.solidsGroup.add(rect);
     });
@@ -107,7 +117,8 @@ export default class ArenaScene extends Phaser.Scene {
     // Semi-Solid Jump-Through Platforms
     this.platformsGroup = this.physics.add.staticGroup();
     config.platforms.forEach((p) => {
-      const rect = this.add.rectangle(p.x, p.y, p.width, p.height, 0x000000, 0);
+      const rect = this.add.rectangle(p.x, p.y, p.width, p.height, 0x0ea5e9, 0.35);
+      rect.setStrokeStyle(2, 0x38bdf8, 0.9);
       this.physics.add.existing(rect, true);
       // Allow jumping through from below (one-way)
       rect.body.checkCollision.down = false;
@@ -119,10 +130,19 @@ export default class ArenaScene extends Phaser.Scene {
     // Hazards (Lava / Spikes)
     this.hazardsGroup = this.physics.add.staticGroup();
     config.hazards.forEach((h) => {
-      const hazardZone = this.add.rectangle(h.x, h.y, h.width, h.height, h.color, 0.15);
+      const hazardZone = this.add.rectangle(h.x, h.y, h.width, h.height, h.color, 0.55);
+      hazardZone.setStrokeStyle(2, 0xff4757, 0.95);
       this.physics.add.existing(hazardZone, true);
       hazardZone.hazardData = h;
       this.hazardsGroup.add(hazardZone);
+
+      this.tweens.add({
+        targets: hazardZone,
+        alpha: 0.3,
+        yoyo: true,
+        repeat: -1,
+        duration: 750
+      });
     });
   }
 
@@ -198,13 +218,17 @@ export default class ArenaScene extends Phaser.Scene {
 
     if (!player.lastHazardHit || now - player.lastHazardHit > 600) {
       player.lastHazardHit = now;
-      soundSynth.playHazardHurt();
 
       if (data.type === 'lava') {
+        soundSynth.playHazardHurt();
         player.takeDamage(data.instantDamage, player.x, 150);
       } else if (data.type === 'spike') {
-        player.takeDamage(data.instantDamage, player.x, 150);
-        player.body.setVelocityY(data.bounceImpulseY || -380);
+        // Zero damage per user design: only upward bounce impulse
+        soundSynth.playJump(true);
+        if (data.instantDamage && data.instantDamage > 0) {
+          player.takeDamage(data.instantDamage, player.x, 150);
+        }
+        player.body.setVelocityY(data.bounceImpulseY || -420);
       }
     }
   }
@@ -214,6 +238,10 @@ export default class ArenaScene extends Phaser.Scene {
 
     const hitbox = this.localPlayer.executeAttack();
     if (!hitbox) return;
+
+    // Kinetic forward lunge step for impact realism
+    const dir = this.localPlayer.facing === 'right' ? 1 : -1;
+    this.localPlayer.body.setVelocityX(this.localPlayer.body.velocity.x + dir * 65);
 
     // Check hit against test dummy
     if (this.testDummy && !this.testDummy.isDead) {
@@ -262,6 +290,11 @@ export default class ArenaScene extends Phaser.Scene {
     const skillResult = this.localPlayer.executeSkill();
     if (!skillResult) return;
 
+    // Kinetic camera punch for explosive weight
+    if (this.cameras?.main) {
+      this.cameras.main.shake(110, 0.011);
+    }
+
     // Particle FX based on skill
     if (skillResult.type === 'flame_surge') {
       const emitter = this.add.particles(this.localPlayer.x, this.localPlayer.y, 'particle_fire', {
@@ -297,12 +330,48 @@ export default class ArenaScene extends Phaser.Scene {
       this.time.delayedCall(400, () => emitter.destroy());
     }
 
-    // Check hit against dummy or remote players
+    // Check hit against test dummy
     if (this.testDummy && !this.testDummy.isDead) {
       const dist = Phaser.Math.Distance.Between(this.localPlayer.x, this.localPlayer.y, this.testDummy.x, this.testDummy.y);
       if (dist < 140) {
         this.testDummy.takeDamage(skillResult.damage, this.localPlayer.x, skillResult.knockback);
+        if (this.testDummy.isDead) {
+          this.scores.kills++;
+          this.time.delayedCall(4000, () => {
+            const sp = this.getRandomSpawnPoint();
+            this.testDummy.respawn(sp.x, sp.y, this.getRandomCharacter());
+          });
+        }
       }
+    }
+
+    // Check hit against remote players
+    this.remotePlayers.forEach((remote) => {
+      if (!remote.isDead && !remote.isInvincible) {
+        const dist = Phaser.Math.Distance.Between(this.localPlayer.x, this.localPlayer.y, remote.x, remote.y);
+        const radius = skillResult.radius || (skillResult.width ? skillResult.width : 120);
+        if (dist <= radius) {
+          const dmg = remote.takeDamage(skillResult.damage, this.localPlayer.x, skillResult.knockback);
+          if (dmg > 0 && remote.isDead) {
+            this.scores.kills++;
+          }
+          if (this.socket) {
+            this.socket.emit('player_hit', {
+              targetId: remote.id,
+              damage: skillResult.damage,
+              attackerX: this.localPlayer.x
+            });
+          }
+        }
+      }
+    });
+
+    if (this.socket) {
+      this.socket.emit('player_skill', {
+        type: skillResult.type,
+        x: Math.round(this.localPlayer.x),
+        y: Math.round(this.localPlayer.y)
+      });
     }
   }
 
@@ -375,14 +444,19 @@ export default class ArenaScene extends Phaser.Scene {
         if (!remote) {
           remote = new Player(this, pData.x, pData.y, {
             id: pData.id,
-            username: pData.username,
+            username: pData.username || 'Test User 2',
             isLocal: false,
-            colorIndex: pData.colorIndex || 1,
-            archetypeId: pData.archetypeId
+            colorIndex: pData.colorIndex !== undefined ? pData.colorIndex : 1,
+            archetypeId: pData.archetypeId || 'ice_speedster'
           });
           this.physics.add.collider(remote, this.solidsGroup);
           this.physics.add.collider(remote, this.platformsGroup);
           this.remotePlayers.set(pData.id, remote);
+        }
+
+        // If remote player was dead and now has health (respawned)
+        if (remote.isDead && pData.hp > 0) {
+          remote.respawn(pData.x, pData.y, pData.archetypeId);
         }
 
         remote.targetX = pData.x;
@@ -390,9 +464,34 @@ export default class ArenaScene extends Phaser.Scene {
         remote.targetVx = pData.vx;
         remote.targetVy = pData.vy;
         remote.hp = pData.hp;
-        remote.facing = pData.facing;
+        remote.facing = pData.facing || 'right';
         remote.updateHpBar();
       });
+    });
+
+    this.socket.on('player_damaged', ({ targetId, damage, attackerX }) => {
+      if (this.socket.id === targetId && this.localPlayer && !this.localPlayer.isDead && !this.localPlayer.isInvincible) {
+        this.localPlayer.takeDamage(damage, attackerX, 220);
+      } else if (this.remotePlayers.has(targetId)) {
+        const remote = this.remotePlayers.get(targetId);
+        if (remote && !remote.isDead && !remote.isInvincible) {
+          remote.takeDamage(damage, attackerX, 220);
+        }
+      }
+    });
+
+    this.socket.on('player_attack', ({ id }) => {
+      const remote = this.remotePlayers.get(id);
+      if (remote && !remote.isDead) {
+        remote.executeAttack();
+      }
+    });
+
+    this.socket.on('player_skill', ({ id }) => {
+      const remote = this.remotePlayers.get(id);
+      if (remote && !remote.isDead) {
+        remote.executeSkill();
+      }
     });
 
     this.socket.on('player_left', ({ id }) => {
@@ -427,14 +526,14 @@ export default class ArenaScene extends Phaser.Scene {
     // Horizontal Movement
     if (this.keys.A.isDown || this.cursors.left.isDown) {
       this.localPlayer.body.setVelocityX(-speed);
-      this.localPlayer.facing = 'left';
-      this.localPlayer.drawBody('run');
+      this.localPlayer.setFacing('left');
+      this.localPlayer.playAnim('run');
     } else if (this.keys.D.isDown || this.cursors.right.isDown) {
       this.localPlayer.body.setVelocityX(speed);
-      this.localPlayer.facing = 'right';
-      this.localPlayer.drawBody('run');
+      this.localPlayer.setFacing('right');
+      this.localPlayer.playAnim('run');
     } else {
-      this.localPlayer.drawBody('idle');
+      this.localPlayer.playAnim('idle');
     }
 
     // Platform Drop-Down (Down + Space or S + Space)
@@ -457,7 +556,16 @@ export default class ArenaScene extends Phaser.Scene {
         this.localPlayer.body.setVelocityY(vel);
         this.localPlayer.jumpCount++;
         soundSynth.playJump(isDouble);
-        this.localPlayer.drawBody('jump');
+        this.localPlayer.playAnim('jump');
+        this.localPlayer.spawnDust(isDouble ? 3 : 5);
+        this.tweens.add({
+          targets: this.localPlayer.sprite,
+          scaleX: 0.88,
+          scaleY: 1.16,
+          duration: 75,
+          yoyo: true,
+          ease: 'Quad.easeOut'
+        });
       }
     }
 
@@ -475,6 +583,8 @@ export default class ArenaScene extends Phaser.Scene {
     if (this.socket && time - this.lastNetworkEmit > GAME_SETTINGS.NETWORK.INPUT_EMIT_RATE_MS) {
       this.lastNetworkEmit = time;
       this.socket.emit('player_state', {
+        username: this.username,
+        colorIndex: 0,
         x: Math.round(this.localPlayer.x),
         y: Math.round(this.localPlayer.y),
         vx: Math.round(this.localPlayer.body.velocity.x),

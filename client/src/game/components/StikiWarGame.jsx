@@ -24,6 +24,45 @@ export default function StikiWarGame({ socket, username, userColor, onLeave }) {
     deaths: 0
   });
 
+  // Real-time Laptop Keycap State for interactive on-screen keyboard dock
+  const [activeKeys, setActiveKeys] = useState({
+    A: false,
+    D: false,
+    W: false,
+    S: false,
+    SPACE: false,
+    J: false,
+    K: false,
+    E: false
+  });
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const code = e.key?.toUpperCase();
+      if (e.code === 'Space') {
+        setActiveKeys((prev) => ({ ...prev, SPACE: true }));
+      } else if (['A', 'D', 'W', 'S', 'J', 'K', 'E'].includes(code)) {
+        setActiveKeys((prev) => ({ ...prev, [code]: true }));
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      const code = e.key?.toUpperCase();
+      if (e.code === 'Space') {
+        setActiveKeys((prev) => ({ ...prev, SPACE: false }));
+      } else if (['A', 'D', 'W', 'S', 'J', 'K', 'E'].includes(code)) {
+        setActiveKeys((prev) => ({ ...prev, [code]: false }));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+
   const toggleMute = () => {
     const next = !isMuted;
     setIsMuted(next);
@@ -57,18 +96,12 @@ export default function StikiWarGame({ socket, username, userColor, onLeave }) {
     const game = new Phaser.Game(config);
     gameInstanceRef.current = game;
 
-    // Pass data into scenes
-    game.scene.start('BootScene');
-    game.events.once('ready', () => {
-      const arena = game.scene.getScene('ArenaScene');
-      if (arena) {
-        arena.scene.restart({
-          socket,
-          username,
-          userColor,
-          onHudUpdate: (data) => setHudData((prev) => ({ ...prev, ...data }))
-        });
-      }
+    // Store state in Phaser global registry for seamless scene access
+    game.registry.set('arenaData', {
+      socket,
+      username,
+      userColor,
+      onHudUpdate: (data) => setHudData((prev) => ({ ...prev, ...data }))
     });
 
     // Cleanup on unmount (React 18 friendly)
@@ -165,16 +198,29 @@ export default function StikiWarGame({ socket, username, userColor, onLeave }) {
           </div>
         </div>
 
-        {/* Right: Power Cooldown, Scoreboard & Actions */}
+        {/* Right: Attack, Power Cooldown, Scoreboard & Actions */}
         <div className="stiki-hud-actions">
+          {/* Attack Key Indicator */}
+          <div className={`stiki-action-indicator ${activeKeys.J ? 'active' : ''}`} title="Basic Attack: Press [J] or Left Click">
+            <span className="key-pill">J</span>
+            <span className="action-text">STRIKE</span>
+          </div>
+
+          {/* Special Skill Card */}
           <div
-            className={`stiki-skill-card ${isSkillReady ? 'ready' : 'on-cooldown'}`}
-            title={`Special: ${hudData.power?.name}`}
+            className={`stiki-skill-card ${isSkillReady ? 'ready' : 'on-cooldown'} ${activeKeys.K || activeKeys.E ? 'active-pressed' : ''}`}
+            title={`Special: ${hudData.power?.name} (Press [K] or [E])`}
           >
             <span className="stiki-skill-icon">{hudData.power?.icon || '⚡'}</span>
             <div className="stiki-skill-label">
               <span className="skill-name">{hudData.power?.name || 'Skill'}</span>
-              <span className="skill-cd">{isSkillReady ? 'READY [K]' : `${skillCdSec}s`}</span>
+              <span className="skill-cd">
+                {isSkillReady ? (
+                  <span className="ready-badge">READY <span className="key-pill pill-sm">K</span></span>
+                ) : (
+                  `${skillCdSec}s`
+                )}
+              </span>
             </div>
           </div>
 
@@ -193,7 +239,7 @@ export default function StikiWarGame({ socket, username, userColor, onLeave }) {
           </button>
 
           <button className="stiki-leave-btn" onClick={onLeave}>
-            Exit Arena
+            Exit
           </button>
         </div>
       </div>
@@ -201,7 +247,7 @@ export default function StikiWarGame({ socket, username, userColor, onLeave }) {
       {/* Phaser Canvas Viewport Container */}
       <div className="stiki-canvas-container" ref={gameContainerRef} />
 
-      {/* Touch Action Controls for Mobile / Emulation */}
+      {/* Touch Action Controls for Mobile */}
       <div className="stiki-touch-controls">
         <div className="touch-group-left">
           <button className="touch-btn drop-btn" onTouchStart={handleTouchDropDown} onClick={handleTouchDropDown}>
@@ -213,7 +259,7 @@ export default function StikiWarGame({ socket, username, userColor, onLeave }) {
             ⬆ Jump
           </button>
           <button className="touch-btn attack-btn" onTouchStart={handleTouchAttack} onClick={handleTouchAttack}>
-            🥊 Attack
+            🥊 Attack [J]
           </button>
           <button
             className={`touch-btn skill-btn ${isSkillReady ? 'ready' : ''}`}
@@ -221,18 +267,68 @@ export default function StikiWarGame({ socket, username, userColor, onLeave }) {
             onClick={handleTouchSkill}
             disabled={!isSkillReady}
           >
-            {hudData.power?.icon} Skill
+            {hudData.power?.icon} Skill [K]
           </button>
         </div>
       </div>
 
-      {/* Desktop Controls Helper Banner */}
-      <div className="stiki-controls-guide">
-        <span><b>Movement:</b> A/D or ←/→</span>
-        <span><b>Jump / Double Jump:</b> Space or W</span>
-        <span><b>Drop Down:</b> S + Space</span>
-        <span><b>Attack:</b> J / Left Click</span>
-        <span><b>Special:</b> K or E (7s CD)</span>
+      {/* Interactive Black Neumorphic Laptop Controls Dock */}
+      <div className="stiki-neumorphic-dock">
+        <div className="dock-status-cluster">
+          <span className="dock-led" />
+          <span className="dock-title">LAPTOP CONTROLS</span>
+        </div>
+
+        <div className="dock-divider" />
+
+        <div className="dock-group">
+          <span className="dock-label">MOVE</span>
+          <div className="keycap-cluster">
+            <div className={`keycap ${activeKeys.A ? 'pressed' : ''}`} title="Move Left (A / ◀)">
+              <span className="keycap-main">A</span>
+              <span className="keycap-sub">◀</span>
+            </div>
+            <div className={`keycap ${activeKeys.D ? 'pressed' : ''}`} title="Move Right (D / ▶)">
+              <span className="keycap-main">D</span>
+              <span className="keycap-sub">▶</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="dock-divider" />
+
+        <div className="dock-group">
+          <span className="dock-label">JUMP & DROP</span>
+          <div className="keycap-cluster">
+            <div className={`keycap keycap-wide ${activeKeys.W || activeKeys.SPACE ? 'pressed' : ''}`} title="Jump & Double Jump (Space / W)">
+              <span className="keycap-main">W / SPACE</span>
+              <span className="keycap-sub">JUMP ×2</span>
+            </div>
+            <div className={`keycap keycap-wide ${(activeKeys.S && activeKeys.SPACE) ? 'pressed' : ''}`} title="Drop Down Platform (S + Space)">
+              <span className="keycap-main">S + SPACE</span>
+              <span className="keycap-sub">DROP</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="dock-divider" />
+
+        <div className="dock-group">
+          <span className="dock-label">ACTIONS</span>
+          <div className="keycap-cluster">
+            <div className={`keycap keycap-attack ${activeKeys.J ? 'pressed' : ''}`} title="Basic Strike: Press J or Left-Click">
+              <span className="keycap-main">J</span>
+              <span className="keycap-sub">ATTACK</span>
+            </div>
+            <div
+              className={`keycap keycap-skill ${isSkillReady ? 'ready' : 'cd'} ${activeKeys.K || activeKeys.E ? 'pressed' : ''}`}
+              title={`Special Skill: Press K or E (${hudData.power?.name || 'Ability'})`}
+            >
+              <span className="keycap-main">K / E</span>
+              <span className="keycap-sub">{isSkillReady ? 'SPECIAL' : `${skillCdSec}s`}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

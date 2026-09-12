@@ -102,7 +102,7 @@ export const MAPS_CONFIG = {
         y: 635,
         width: 170,
         height: 30,
-        instantDamage: 35,
+        instantDamage: 0,
         bounceImpulseY: -420,
         color: 0xd63031
       },
@@ -113,7 +113,7 @@ export const MAPS_CONFIG = {
         y: 635,
         width: 170,
         height: 30,
-        instantDamage: 35,
+        instantDamage: 0,
         bounceImpulseY: -420,
         color: 0xd63031
       }

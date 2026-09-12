@@ -6,16 +6,16 @@ export const GAME_SETTINGS = {
   HEIGHT: 720,
   ASPECT_RATIO: 16 / 9,
 
-  // Physics (Phaser Arcade Physics)
+  // Physics (Phaser Arcade Physics) - Tuned for grounded, punchy platforming
   PHYSICS: {
-    GRAVITY_Y: 1000,
-    BASE_SPEED: 280,
+    GRAVITY_Y: 1200,
+    BASE_SPEED: 300,
     ICE_SPEED_MULTIPLIER: 1.25, // Ice Speedster passive
-    JUMP_VELOCITY: -480,
-    DOUBLE_JUMP_VELOCITY: -430,
-    GROUND_DRAG: 1200,
-    AIR_DRAG: 200,
-    MAX_FALL_SPEED: 800,
+    JUMP_VELOCITY: -530,
+    DOUBLE_JUMP_VELOCITY: -470,
+    GROUND_DRAG: 2200,
+    AIR_DRAG: 300,
+    MAX_FALL_SPEED: 850,
     GHOSTING: true // Players pass through each other
   },
 

@@ -8,7 +8,15 @@ export default class BootScene extends Phaser.Scene {
     super('BootScene');
   }
 
+  init(data) {
+    this.gameData = data || this.registry?.get('arenaData');
+  }
+
   preload() {
+    this.load.on('loaderror', (fileObj) => {
+      console.warn('[BootScene] Asset load warning:', fileObj?.key, fileObj?.src);
+    });
+
     // Show loading progress bar
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
@@ -63,8 +71,9 @@ export default class BootScene extends Phaser.Scene {
     // 2. Register Phaser Animations for all 4 fighters
     this.registerCharacterAnimations();
 
-    // 3. Transition into the active Arena Scene
-    this.scene.start('ArenaScene');
+    // 3. Transition into active Arena Scene with data
+    const finalData = this.gameData || this.registry?.get('arenaData') || {};
+    this.scene.start('ArenaScene', finalData);
   }
 
   registerCharacterAnimations() {
@@ -207,6 +216,26 @@ export default class BootScene extends Phaser.Scene {
       g.fillStyle(0x00d2d3, 0.25);
       g.fillCircle(28, 28, 24);
       g.generateTexture('shield_bubble', 56, 56);
+      g.destroy();
+    }
+
+    // Ground Dust Puff Particle (Landing / Jumping / Skidding)
+    if (!this.textures.exists('particle_dust')) {
+      const g = this.make.graphics({ x: 0, y: 0, add: false });
+      g.fillStyle(0x94a3b8, 0.65);
+      g.fillCircle(6, 6, 6);
+      g.fillStyle(0xe2e8f0, 0.4);
+      g.fillCircle(6, 6, 3);
+      g.generateTexture('particle_dust', 12, 12);
+      g.destroy();
+    }
+
+    // Impact Spark Particle
+    if (!this.textures.exists('particle_spark')) {
+      const g = this.make.graphics({ x: 0, y: 0, add: false });
+      g.fillStyle(0xffffff, 1);
+      g.fillCircle(3, 3, 3);
+      g.generateTexture('particle_spark', 6, 6);
       g.destroy();
     }
   }

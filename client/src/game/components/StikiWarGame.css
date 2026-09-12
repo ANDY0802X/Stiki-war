@@ -1,48 +1,58 @@
-/* STIKI WAR — Game Container & HUD Styles */
+﻿/* =========================================================
+   STIKI WAR — Black Neumorphic UI & In-Game Controls
+   ========================================================= */
 
 .stiki-war-wrapper {
   position: relative;
   width: 100%;
   height: 100vh;
-  background-color: #0b0c10;
+  background-color: #08090d;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   user-select: none;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #e2e8f0;
 }
 
-/* Top HUD Bar */
+/* ---------------------------------------------------------
+   Top HUD Bar (Black Neumorphic Slab)
+   --------------------------------------------------------- */
 .stiki-hud-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 20px;
-  background: rgba(15, 23, 42, 0.88);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 22px;
+  background: #0d0f15;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   z-index: 20;
+  gap: 16px;
 }
 
+/* Left: Player Profile & Carved HP Bar */
 .stiki-hud-player {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  background: #11131b;
+  padding: 6px 14px 6px 8px;
+  border-radius: 14px;
+  box-shadow: 5px 5px 12px #06070a, -4px -4px 10px #1a1d2a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .stiki-avatar-badge {
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: #1e293b;
+  background: #0d0e14;
   border: 2px solid #38bdf8;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  color: #fff;
-  font-size: 16px;
   overflow: hidden;
+  box-shadow: inset 2px 2px 5px #050608, inset -2px -2px 5px #181a24;
 }
 
 .stiki-avatar-img {
@@ -55,28 +65,33 @@
 .stiki-player-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .stiki-player-name {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   color: #f1f5f9;
+  letter-spacing: 0.3px;
 }
 
+/* Sunken Inset Carved HP Bar */
 .stiki-hp-container {
-  width: 140px;
-  height: 12px;
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: 6px;
+  width: 150px;
+  height: 13px;
+  background: #08090d;
+  border-radius: 7px;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 3px 3px 6px #030406, inset -2px -2px 5px #14161f;
+  border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .stiki-hp-fill {
   height: 100%;
-  transition: width 0.15s ease-out, background-color 0.2s;
+  border-radius: 6px;
+  transition: width 0.18s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s;
+  box-shadow: 0 0 10px rgba(46, 213, 115, 0.4);
 }
 
 .stiki-hp-text {
@@ -89,98 +104,178 @@
   align-items: center;
   justify-content: center;
   font-size: 9px;
-  font-weight: bold;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  font-weight: 800;
+  font-family: monospace;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
-/* Center Map & Rotation Timer */
+/* Center: Map Title & 5-Min Countdown */
 .stiki-hud-map {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
+  background: #11131b;
+  padding: 6px 20px;
+  border-radius: 12px;
+  box-shadow: 5px 5px 12px #06070a, -4px -4px 10px #1a1d2a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .stiki-map-name {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 800;
   color: #f8fafc;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
 }
 
 .stiki-map-timer {
   font-size: 11px;
   color: #94a3b8;
   font-family: monospace;
+  font-weight: 600;
 }
 
 .stiki-map-timer .timer-val {
   color: #00d2d3;
-  font-weight: bold;
+  font-weight: 800;
+  text-shadow: 0 0 8px rgba(0, 210, 211, 0.4);
 }
 
-/* Right HUD Actions */
+/* Right: Actions, Strike, Skill, Score */
 .stiki-hud-actions {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.stiki-skill-card {
+/* Neumorphic Attack Pill Indicator */
+.stiki-action-indicator {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  border-radius: 8px;
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #11131b;
+  border-radius: 10px;
+  box-shadow: 4px 4px 10px #06070a, -3px -3px 8px #191c28;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.12s;
+}
+
+.stiki-action-indicator.active {
+  box-shadow: inset 3px 3px 6px #050608, inset -2px -2px 5px #181b26;
+  border-color: rgba(245, 158, 11, 0.5);
+  transform: translateY(1px);
+}
+
+.stiki-action-indicator .action-text {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #cbd5e1;
+}
+
+/* Key Pill Icon */
+.key-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  background: #090a0e;
+  border-radius: 5px;
+  font-family: monospace;
+  font-weight: 900;
+  font-size: 11px;
+  color: #00d2d3;
+  box-shadow: inset 2px 2px 4px #040507, inset -1px -1px 3px #181a24;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.key-pill.pill-sm {
+  min-width: 16px;
+  height: 16px;
+  font-size: 9px;
+  padding: 0 3px;
+  color: #2ed573;
+}
+
+/* Neumorphic Special Skill Card */
+.stiki-skill-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  border-radius: 12px;
+  background: #11131b;
+  box-shadow: 5px 5px 12px #06070a, -4px -4px 10px #1a1d2a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .stiki-skill-card.ready {
-  border-color: #2ed573;
-  box-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
+  border-color: rgba(46, 213, 115, 0.4);
+  box-shadow: 5px 5px 12px #06070a, -4px -4px 10px #1a1d2a, 0 0 14px rgba(46, 213, 115, 0.25);
 }
 
 .stiki-skill-card.on-cooldown {
-  opacity: 0.7;
+  opacity: 0.8;
+  background: #0d0f15;
+  box-shadow: inset 3px 3px 7px #050608, inset -2px -2px 6px #161822;
+}
+
+.stiki-skill-card.active-pressed {
+  box-shadow: inset 4px 4px 8px #040507, inset -3px -3px 7px #181b26;
+  transform: translateY(1px);
 }
 
 .stiki-skill-icon {
   font-size: 18px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
 }
 
 .stiki-skill-label {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .stiki-skill-label .skill-name {
   font-size: 11px;
+  font-weight: 700;
   color: #cbd5e1;
 }
 
 .stiki-skill-label .skill-cd {
-  font-size: 10px;
-  font-weight: bold;
-  color: #2ed573;
-}
-
-.stiki-skill-card.on-cooldown .skill-cd {
+  font-size: 11px;
+  font-weight: 800;
   color: #ffa502;
+  font-family: monospace;
 }
 
+.ready-badge {
+  color: #2ed573;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Score Badge */
 .stiki-score-badge {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: rgba(15, 23, 42, 0.9);
-  border-radius: 8px;
+  gap: 8px;
+  padding: 8px 14px;
+  background: #11131b;
+  border-radius: 12px;
   font-size: 12px;
-  font-weight: bold;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-weight: 800;
+  font-family: monospace;
+  box-shadow: 4px 4px 10px #06070a, -3px -3px 8px #191c28;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .score-kill {
@@ -192,41 +287,63 @@
 }
 
 .score-divider {
-  color: #64748b;
+  color: #475569;
 }
 
+/* Audio Mute & Leave Buttons */
 .stiki-audio-btn {
-  background: #1e293b;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 14px;
+  width: 38px;
+  height: 38px;
+  background: #11131b;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
   cursor: pointer;
   color: #fff;
-  transition: background 0.15s;
+  box-shadow: 4px 4px 9px #06070a, -3px -3px 8px #191c27;
+  transition: all 0.15s;
 }
 
 .stiki-audio-btn:hover {
-  background: #334155;
+  background: #161924;
+  box-shadow: 5px 5px 12px #06070a, -4px -4px 10px #1e2230;
+}
+
+.stiki-audio-btn:active {
+  box-shadow: inset 3px 3px 6px #050608, inset -2px -2px 5px #181b26;
+  transform: translateY(1px);
 }
 
 .stiki-leave-btn {
-  background: #dc2626;
-  border: none;
-  border-radius: 8px;
-  padding: 6px 14px;
+  background: #131015;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 10px;
+  padding: 8px 16px;
   font-size: 12px;
-  font-weight: 600;
-  color: #fff;
+  font-weight: 700;
+  color: #ef4444;
   cursor: pointer;
-  transition: background 0.15s;
+  box-shadow: 4px 4px 10px #06070a, -3px -3px 8px #181b26;
+  transition: all 0.15s;
 }
 
 .stiki-leave-btn:hover {
-  background: #b91c1c;
+  background: #1c1117;
+  border-color: rgba(239, 68, 68, 0.7);
+  box-shadow: 5px 5px 12px #06070a, -4px -4px 10px #1f141c, 0 0 12px rgba(239, 68, 68, 0.2);
 }
 
-/* Phaser Canvas Viewport */
+.stiki-leave-btn:active {
+  box-shadow: inset 3px 3px 6px #070305, inset -2px -2px 5px #1d1016;
+  transform: translateY(1px);
+}
+
+/* ---------------------------------------------------------
+   Phaser Canvas Viewport Container
+   --------------------------------------------------------- */
 .stiki-canvas-container {
   flex: 1;
   width: 100%;
@@ -238,81 +355,227 @@
 }
 
 .stiki-canvas-container canvas {
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
-  border-radius: 4px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.95);
+  border-radius: 6px;
 }
 
-/* Controls Guide Banner (Desktop) */
-.stiki-controls-guide {
+/* ---------------------------------------------------------
+   Interactive Black Neumorphic Laptop Controls Dock
+   --------------------------------------------------------- */
+.stiki-neumorphic-dock {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 18px;
-  padding: 8px 16px;
-  background: rgba(15, 23, 42, 0.92);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 24px;
+  background: #0d0f15;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.9), 0 -1px 0 rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  z-index: 15;
+}
+
+.dock-status-cluster {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dock-led {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #00d2d3;
+  box-shadow: 0 0 8px #00d2d3, 0 0 14px rgba(0, 210, 211, 0.5);
+}
+
+.dock-title {
   font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
   color: #94a3b8;
-  z-index: 10;
+  font-family: monospace;
 }
 
-.stiki-controls-guide b {
+.dock-divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: -1px 0 0 #050608;
+}
+
+.dock-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dock-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #64748b;
+  font-family: monospace;
+}
+
+.keycap-cluster {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Embossed Black Neumorphic Keycap */
+.keycap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 38px;
+  padding: 4px 8px;
+  background: linear-gradient(145deg, #151822, #0d0f15);
+  border-radius: 8px;
+  box-shadow: 4px 4px 9px #050609, -3px -3px 8px #191c28;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: default;
+  transition: all 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.keycap.keycap-wide {
+  min-width: 82px;
+}
+
+.keycap-main {
+  font-size: 11px;
+  font-weight: 900;
+  font-family: monospace;
   color: #f1f5f9;
+  line-height: 1.1;
 }
 
-/* Touch Action Controls (Mobile & Landscape) */
+.keycap-sub {
+  font-size: 8px;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  margin-top: 1px;
+}
+
+/* Physical Depressed Keycap on Keypress */
+.keycap.pressed {
+  background: #090b10 !important;
+  box-shadow: inset 3px 3px 6px #030406, inset -2px -2px 5px #151822 !important;
+  border-color: rgba(56, 189, 248, 0.5) !important;
+  transform: translateY(2px);
+}
+
+.keycap.pressed .keycap-main {
+  color: #38bdf8;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+}
+
+.keycap.pressed .keycap-sub {
+  color: #38bdf8;
+}
+
+/* Attack Keycap Accent */
+.keycap.keycap-attack {
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.keycap.keycap-attack.pressed {
+  border-color: #f59e0b !important;
+}
+
+.keycap.keycap-attack.pressed .keycap-main,
+.keycap.keycap-attack.pressed .keycap-sub {
+  color: #f59e0b;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.7);
+}
+
+/* Special Skill Keycap Accent */
+.keycap.keycap-skill.ready {
+  border-color: rgba(0, 210, 211, 0.3);
+  box-shadow: 4px 4px 9px #050609, -3px -3px 8px #191c28, 0 0 10px rgba(0, 210, 211, 0.2);
+}
+
+.keycap.keycap-skill.ready .keycap-main {
+  color: #00d2d3;
+}
+
+.keycap.keycap-skill.pressed {
+  border-color: #00d2d3 !important;
+}
+
+.keycap.keycap-skill.pressed .keycap-main,
+.keycap.keycap-skill.pressed .keycap-sub {
+  color: #00d2d3;
+  text-shadow: 0 0 8px rgba(0, 210, 211, 0.7);
+}
+
+/* ---------------------------------------------------------
+   Mobile Virtual Controls (Touch Devices)
+   --------------------------------------------------------- */
 .stiki-touch-controls {
   display: none;
   position: absolute;
-  bottom: 24px;
+  bottom: 14px;
   left: 0;
-  right: 0;
-  padding: 0 24px;
+  width: 100%;
+  padding: 0 20px;
   justify-content: space-between;
   pointer-events: none;
-  z-index: 30;
+  z-index: 25;
+}
+
+@media (pointer: coarse) and (max-width: 1024px) {
+  .stiki-touch-controls {
+    display: flex;
+  }
+  .stiki-neumorphic-dock {
+    display: none;
+  }
 }
 
 .touch-group-left,
 .touch-group-right {
   display: flex;
   gap: 12px;
+  align-items: center;
   pointer-events: auto;
 }
 
 .touch-btn {
-  width: 56px;
-  height: 56px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
-  background: rgba(30, 41, 59, 0.85);
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  color: #fff;
-  font-size: 11px;
-  font-weight: bold;
+  background: #11131b;
+  color: #f1f5f9;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 5px 5px 12px #06070a, -4px -4px 10px #1a1d2a;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
   cursor: pointer;
   touch-action: manipulation;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: all 0.1s;
 }
 
 .touch-btn:active {
-  transform: scale(0.92);
-  background: #38bdf8;
+  box-shadow: inset 3px 3px 6px #040507, inset -2px -2px 5px #181b26;
+  transform: translateY(2px);
+  color: #00d2d3;
+}
+
+.touch-btn.attack-btn {
+  background: #17141b;
+  border-color: rgba(245, 158, 11, 0.3);
 }
 
 .touch-btn.skill-btn.ready {
-  border-color: #2ed573;
-}
-
-.touch-btn:disabled {
-  opacity: 0.4;
-}
-
-/* Media Query for Touch / Mobile Screens */
-@media (max-width: 1024px) or (hover: none) {
-  .stiki-touch-controls {
-    display: flex;
-  }
+  background: #0f1620;
+  border-color: rgba(0, 210, 211, 0.4);
+  box-shadow: 5px 5px 12px #06070a, -4px -4px 10px #1a1d2a, 0 0 14px rgba(0, 210, 211, 0.35);
+  color: #00d2d3;
 }

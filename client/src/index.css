@@ -315,26 +315,27 @@ input:focus, textarea:focus, select:focus {
 
 /* Hero Section */
 .stiki-hero-card {
-  background: rgba(18, 25, 44, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 36px;
+  background: #0d0f15;
+  box-shadow: 10px 10px 24px #050608, -8px -8px 20px #181b26;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  padding: 38px 28px;
   text-align: center;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
 }
 
 .hero-badge {
   display: inline-block;
-  background: rgba(232, 65, 24, 0.2);
-  color: #ff6b6b;
+  background: #12141c;
+  color: #00d2d3;
   font-size: 11px;
   font-weight: 800;
-  padding: 5px 14px;
+  padding: 6px 16px;
   border-radius: 20px;
-  border: 1px solid rgba(232, 65, 24, 0.35);
-  margin-bottom: 14px;
+  box-shadow: inset 2px 2px 5px #06070a, inset -2px -2px 5px #1a1e2a;
+  border: 1px solid rgba(0, 210, 211, 0.25);
+  margin-bottom: 16px;
   letter-spacing: 1px;
 }
 
@@ -343,6 +344,7 @@ input:focus, textarea:focus, select:focus {
   font-weight: 900;
   color: #fff;
   margin-bottom: 10px;
+  letter-spacing: 0.5px;
 }
 
 .hero-subtext {
@@ -353,17 +355,18 @@ input:focus, textarea:focus, select:focus {
   line-height: 1.6;
 }
 
-/* Profile Config */
+/* Profile Config - Black Neumorphic Inset/Outset */
 .profile-config-card {
   max-width: 480px;
-  margin: 0 auto 28px;
-  background: rgba(11, 16, 29, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 20px;
+  margin: 0 auto 30px;
+  background: #11131b;
+  box-shadow: 7px 7px 18px #06070a, -6px -6px 16px #1b1e2a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 18px;
+  padding: 22px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
   text-align: left;
 }
 
@@ -374,62 +377,74 @@ input:focus, textarea:focus, select:focus {
 }
 
 .config-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: #cbd5e1;
+  font-size: 11px;
+  font-weight: 800;
+  color: #94a3b8;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+  font-family: monospace;
 }
 
 .handle-input-group {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 .handle-input {
   flex: 1;
-  background: #1e293b;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  padding: 10px 14px;
+  background: #090a0f;
+  box-shadow: inset 4px 4px 8px #040507, inset -3px -3px 7px #171924;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 12px 16px;
   font-size: 14px;
-  color: #fff;
-  font-weight: 600;
+  color: #f1f5f9;
+  font-weight: 700;
+  font-family: monospace;
   outline: none;
+  transition: border-color 0.15s;
 }
 
 .handle-input:focus {
-  border-color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.5);
 }
 
 .btn-reroll {
-  background: #334155;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #fff;
-  border-radius: 8px;
-  padding: 0 16px;
+  background: linear-gradient(145deg, #171923, #0f1118);
+  box-shadow: 4px 4px 10px #06070a, -3px -3px 8px #1a1d29;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  border-radius: 10px;
+  padding: 0 18px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.15s;
 }
 
 .btn-reroll:hover {
-  background: #475569;
+  background: #1a1d29;
+  box-shadow: 5px 5px 12px #06070a, -4px -4px 10px #1e2230;
+}
+
+.btn-reroll:active {
+  box-shadow: inset 3px 3px 6px #050608, inset -2px -2px 5px #181b26;
+  transform: translateY(1px);
 }
 
 .color-palette {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 
 .color-chip {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: 2px solid transparent;
+  border: 2px solid #08090d;
   cursor: pointer;
-  transition: transform 0.15s;
+  box-shadow: 4px 4px 8px #06070a, -2px -2px 6px #1b1e2a;
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 
 .color-chip:hover {
@@ -438,30 +453,36 @@ input:focus, textarea:focus, select:focus {
 
 .color-chip.active {
   border-color: #ffffff;
-  transform: scale(1.18);
+  transform: scale(1.22);
 }
 
+/* Black Neumorphic Hero CTA Button */
 .btn-enter-arena {
-  background: linear-gradient(135deg, #e84118 0%, #f0932b 100%);
-  color: #fff;
-  font-size: 18px;
+  background: linear-gradient(145deg, #161924, #0e1017);
+  box-shadow: 8px 8px 22px #040507, -6px -6px 18px #1b1f2d, 0 0 24px rgba(0, 210, 211, 0.25);
+  border: 1px solid rgba(0, 210, 211, 0.45);
+  color: #00d2d3;
+  font-size: 17px;
   font-weight: 900;
-  letter-spacing: 1px;
-  border: none;
-  border-radius: 14px;
-  padding: 16px 42px;
+  letter-spacing: 1.5px;
+  border-radius: 16px;
+  padding: 18px 46px;
   cursor: pointer;
-  box-shadow: 0 8px 30px rgba(232, 65, 24, 0.5);
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .btn-enter-arena:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 36px rgba(232, 65, 24, 0.65);
+  box-shadow: 10px 10px 26px #040507, -8px -8px 22px #1f2536, 0 0 34px rgba(0, 210, 211, 0.45);
+  color: #fff;
 }
 
 .btn-enter-arena:active {
   transform: translateY(1px);
+  box-shadow: inset 4px 4px 9px #030406, inset -3px -3px 8px #151924;
 }
 
 /* Roster Section */
@@ -471,48 +492,55 @@ input:focus, textarea:focus, select:focus {
 
 .section-title {
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 900;
   color: #f1f5f9;
   letter-spacing: 1px;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .section-sub {
   font-size: 13px;
   color: #94a3b8;
-  margin-bottom: 24px;
+  margin-bottom: 26px;
 }
 
 .roster-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 18px;
+  gap: 20px;
 }
 
 .fighter-card {
-  background: rgba(18, 25, 44, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 18px;
+  background: #0f1118;
+  box-shadow: 6px 6px 16px #06070a, -5px -5px 14px #1a1d28;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 20px;
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  transition: transform 0.15s;
+}
+
+.fighter-card:hover {
+  transform: translateY(-3px);
 }
 
 .fighter-card-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .fighter-portrait {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
   object-fit: cover;
-  background: #0b0c10;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #090a0e;
+  box-shadow: inset 2px 2px 5px #040507, inset -2px -2px 5px #181b26;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .fighter-name {
@@ -537,51 +565,61 @@ input:focus, textarea:focus, select:focus {
 
 .fighter-skill-tag {
   font-size: 11px;
-  font-weight: bold;
-  padding: 4px 10px;
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.4);
+  font-weight: 800;
+  font-family: monospace;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #090a0e;
+  box-shadow: inset 2px 2px 4px #040507, inset -1px -1px 3px #181a24;
   color: #38bdf8;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.2);
 }
 
 /* Controls Guide */
 .stiki-controls-card {
-  background: rgba(18, 25, 44, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 24px;
+  background: #0d0f15;
+  box-shadow: 8px 8px 20px #050608, -6px -6px 16px #181b26;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 26px;
   text-align: center;
 }
 
 .controls-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 14px;
-  margin-top: 18px;
+  gap: 16px;
+  margin-top: 20px;
 }
 
 .control-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 12px;
-  background: rgba(11, 16, 29, 0.6);
-  border-radius: 10px;
+  gap: 8px;
+  padding: 14px;
+  background: #11131b;
+  border-radius: 12px;
+  box-shadow: 5px 5px 12px #06070a, -4px -4px 10px #1a1d29;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .key-badge {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   color: #00d2d3;
   font-family: monospace;
+  background: #090a0e;
+  padding: 4px 10px;
+  border-radius: 6px;
+  box-shadow: inset 2px 2px 4px #040507, inset -1px -1px 3px #181a24;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .key-desc {
   font-size: 11px;
   color: #94a3b8;
+  font-weight: 600;
 }
 
 /* Footer */
